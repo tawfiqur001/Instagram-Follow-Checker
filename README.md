@@ -38,44 +38,9 @@ A simple web-based tool to analyze Instagram followers and following data export
 
 ---
 
-## Tech Stack
-
-* HTML
-* CSS (Vanilla)
-* JavaScript (Vanilla)
-
-No backend required.
-
----
-
-## Live Demo
-
-Add your GitHub Pages link here:
-
-```
-https://yourusername.github.io/instagram-follow-checker/
-```
-
----
-
-## Screenshot (optional)
-
-Add a screenshot of the UI here:
-
-```
-/screenshot.png
-```
-
----
-
 ## Notes
 
 * Works fully in the browser
 * No data is uploaded anywhere
 * Safe and private
 
----
-
-## License
-
-MIT License (optional)

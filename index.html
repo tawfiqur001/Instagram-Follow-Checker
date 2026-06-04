@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Instagram Follower Checker</title>
+<title>Instagram Follow Checker</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a7a6e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3Cpath d='M23 21v-2a4 4 0 0 0-3-3.87'/%3E%3Cpath d='M16 3.13a4 4 0 0 1 0 7.75'/%3E%3C/svg%3E">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
@@ -567,7 +568,7 @@ body {
       <div class="brand-mark">
         <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       </div>
-      <span class="brand-name">Follower Checker</span>
+      <span class="brand-name">Follow Checker</span>
     </div>
     <button class="how-btn" onclick="openGuide()">
       <div class="how-btn-dot"></div>
@@ -633,7 +634,7 @@ body {
           <div class="step-n">7</div>
           <div class="step-body">
             <div class="step-title">Set date range &amp; format</div>
-            <div class="step-desc">Set <code>Date range</code> to <code>All time</code> for the whole data. Set <code>Format</code> to <code>JSON</code>. Tap <code>Start export</code>.</div>
+            <div class="step-desc">Set <code>Date range</code> to <code>Last week</code> for the most recent data. Set <code>Format</code> to <code>JSON</code>. Tap <code>Start export</code>.</div>
           </div>
         </div>
         <div class="step">
@@ -815,7 +816,7 @@ function render() {
   const q = search.value.toLowerCase();
   const filtered = list.filter(x => x.includes(q));
   if (filtered.length === 0) {
-    results.innerHTML = `<div class="empty">${list.length === 0 ? 'No data yet - run an analysis first' : 'No users match your search'}</div>`;
+    results.innerHTML = `<div class="empty">${list.length === 0 ? 'No data yet — run an analysis first' : 'No users match your search'}</div>`;
     return;
   }
   results.innerHTML = filtered.map((u, i) =>

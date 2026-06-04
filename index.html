@@ -3,557 +3,836 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-
-<title>Instagram Followers Checker</title>
-
+<title>Instagram Follower Checker</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
-
-:root{
-    --bg:#0f1115;
-    --card:#171b21;
-    --surface:#1f252d;
-    --border:#2b3440;
-    --accent:#4f8cff;
-    --text:#f5f7fa;
-    --muted:#98a2b3;
+:root {
+  --bg: #f5f4f0;
+  --card: #ffffff;
+  --card2: #f9f8f5;
+  --border: #e4e2db;
+  --border2: #d0cec6;
+  --text: #1a1916;
+  --text2: #6b6860;
+  --text3: #a8a49c;
+  --red: #c94040;
+  --blue: #2d72b8;
+  --teal: #1a7a6e;
+  --teal-bg: #edf7f5;
+  --teal-border: #b2ddd8;
 }
 
-*{
-    box-sizing:border-box;
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Outfit', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
 
-body{
-    margin:0;
-    font-family:Inter,Segoe UI,sans-serif;
-    background:var(--bg);
-    color:var(--text);
-    min-height:100vh;
+.page {
+  max-width: 580px;
+  margin: 0 auto;
+  padding: 48px 20px 80px;
 }
 
-.container{
-    max-width:1100px;
-    margin:auto;
-    padding:40px 24px;
+/* ── Top bar ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  gap: 12px;
 }
 
-.card{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:24px;
-    padding:32px;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-h1{
-    margin:0;
-    text-align:center;
-    font-size:34px;
-    font-weight:700;
-    letter-spacing:-0.5px;
+.brand-mark {
+  width: 34px;
+  height: 34px;
+  background: var(--text);
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.subtitle{
-    text-align:center;
-    color:var(--muted);
-    margin-top:10px;
-    margin-bottom:35px;
+.brand-mark svg {
+  width: 16px; height: 16px;
+  stroke: var(--bg);
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.uploads{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:24px;
+.brand-name {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: var(--text);
 }
 
-.upload-box{
-    background:var(--surface);
-    border:2px dashed var(--border);
-    border-radius:18px;
-    padding:35px 20px;
-    text-align:center;
-    transition:.25s;
+/* "How to use" — eye-catching pill */
+.how-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--teal);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 9px 18px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.1px;
+  transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
+  box-shadow: 0 2px 10px rgba(26,122,110,0.28);
+  white-space: nowrap;
+}
+.how-btn:hover {
+  background: #155f55;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(26,122,110,0.38);
+}
+.how-btn:active { transform: translateY(0); }
+.how-btn svg {
+  width: 14px; height: 14px;
+  stroke: rgba(255,255,255,0.85);
+  stroke-width: 2.2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.how-btn-dot {
+  width: 6px; height: 6px;
+  background: #7effd8;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.7); }
 }
 
-.upload-box:hover{
-    border-color:var(--accent);
+/* ── Hero card ── */
+.hero {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px 28px 28px;
+  margin-bottom: 16px;
 }
 
-.upload-icon{
-    font-size:42px;
-    margin-bottom:12px;
+.hero-title {
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  color: var(--text);
+  line-height: 1.1;
+  margin-bottom: 8px;
 }
 
-.upload-box h3{
-    margin:0 0 10px;
-    font-size:18px;
+.hero-title span {
+  color: var(--teal);
 }
 
-.upload-box small{
-    display:block;
-    color:var(--muted);
-    margin-top:10px;
-    line-height:1.5;
+.hero-sub {
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--text2);
+  margin-bottom: 28px;
 }
 
-input[type=file]{
-    width:100%;
-    margin-top:15px;
-    color:var(--muted);
+/* Upload zone */
+.upload-zone {
+  border: 1.5px dashed var(--border2);
+  border-radius: 14px;
+  background: var(--card2);
+  padding: 28px 20px;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.18s, background 0.18s;
+}
+.upload-zone:hover {
+  border-color: var(--teal);
+  background: var(--teal-bg);
+}
+.upload-zone.has-file {
+  border-style: solid;
+  border-color: var(--teal-border);
+  background: var(--teal-bg);
 }
 
-.action-area{
-    text-align:center;
-    margin-top:30px;
+.upload-ic {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 14px;
+  pointer-events: none;
+}
+.upload-ic svg {
+  width: 20px; height: 20px;
+  stroke: var(--teal);
+  stroke-width: 1.8;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-button{
-    border:none;
-    background:var(--accent);
-    color:white;
-    padding:13px 22px;
-    border-radius:12px;
-    font-weight:600;
-    cursor:pointer;
-    transition:.2s;
+.upload-zone h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+  pointer-events: none;
 }
 
-button:hover{
-    opacity:.9;
+.upload-zone small {
+  font-size: 12.5px;
+  font-weight: 300;
+  color: var(--text3);
+  line-height: 1.5;
+  pointer-events: none;
 }
 
-.stats{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:16px;
-    margin-top:32px;
+.file-badge {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  background: var(--card);
+  border: 1px solid var(--teal-border);
+  border-radius: 6px;
+  padding: 5px 11px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--teal);
+  max-width: 280px;
+  margin: 12px auto 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.file-badge.show { display: inline-flex; }
+.file-badge svg { width: 11px; height: 11px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+/* File input hidden, triggered via JS — NOT overlaid on the zone */
+#zipFile { display: none; }
+
+/* Analyze btn */
+.analyze-btn {
+  width: 100%;
+  margin-top: 14px;
+  background: var(--text);
+  border: none;
+  color: var(--bg);
+  padding: 14px;
+  border-radius: 12px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  letter-spacing: 0.1px;
+  transition: opacity 0.15s;
+}
+.analyze-btn:hover { opacity: 0.85; }
+.analyze-btn:active { opacity: 0.7; }
+
+/* ── Stats row ── */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
 }
 
-.stat{
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:16px;
-    padding:22px;
-    text-align:center;
+.stat {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 12px 14px;
+  text-align: center;
 }
 
-.number{
-    font-size:30px;
-    font-weight:700;
-    margin-bottom:6px;
+.stat .num {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.8px;
+  line-height: 1;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+.stat.s-notback .num { color: var(--red); }
+.stat.s-fans .num { color: var(--blue); }
+
+.stat .slbl {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text3);
 }
 
-.label{
-    color:var(--muted);
-    font-size:14px;
+/* ── Results card ── */
+.results-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
 }
 
-.tabs{
-    display:flex;
-    flex-wrap:wrap;
-    gap:12px;
-    margin-top:30px;
+/* Tabs */
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-bottom: 1px solid var(--border);
+}
+.tabs button {
+  background: none;
+  border: none;
+  border-right: 1px solid var(--border);
+  padding: 13px 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--text3);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+.tabs button:last-child { border-right: none; }
+.tabs button:hover:not(.active) { background: var(--card2); color: var(--text2); }
+.tabs button.active {
+  color: var(--text);
+  font-weight: 600;
+  background: var(--card2);
+  position: relative;
+}
+.tabs button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 20%; right: 20%;
+  height: 2px;
+  background: var(--teal);
+  border-radius: 2px 2px 0 0;
 }
 
-.tabs button{
-    background:var(--surface);
-    border:1px solid var(--border);
+/* Search */
+.search-wrap {
+  position: relative;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.search-wrap svg {
+  position: absolute;
+  left: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 13px; height: 13px;
+  stroke: var(--text3);
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.search {
+  width: 100%;
+  padding: 9px 12px 9px 34px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.search::placeholder { color: var(--text3); }
+.search:focus { border-color: var(--teal-border); }
+
+/* List */
+.results {
+  max-height: 340px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
+}
+.results::-webkit-scrollbar { width: 3px; }
+.results::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+.empty {
+  padding: 40px 20px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--text3);
 }
 
-.active{
-    background:var(--accent) !important;
-    border-color:var(--accent) !important;
+.user-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+.user-row:last-child { border-bottom: none; }
+.user-row:hover { background: var(--card2); }
+
+.avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.uname { flex: 1; font-size: 13px; font-weight: 400; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.u-idx { font-size: 11px; color: var(--text3); font-weight: 300; }
+
+/* Copy btn */
+.copy-btn {
+  width: 100%;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--border);
+  color: var(--text2);
+  padding: 13px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.copy-btn:hover { background: var(--card2); color: var(--teal); }
+
+/* ── Modal ── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20,18,14,0.55);
+  z-index: 300;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+@media(min-width:540px) { .overlay { align-items: center; padding: 24px; } }
+.overlay.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 22px 22px 0 0;
+  width: 100%;
+  max-height: 87vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
+  transform: translateY(20px);
+  transition: transform 0.22s ease;
+}
+@media(min-width:540px) { .modal { max-width: 500px; border-radius: 20px; } }
+.overlay.open .modal { transform: translateY(0); }
+.modal::-webkit-scrollbar { width: 3px; }
+.modal::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+.drag-handle {
+  width: 36px; height: 4px;
+  background: var(--border2);
+  border-radius: 2px;
+  margin: 12px auto 0;
+}
+@media(min-width:540px) { .drag-handle { display: none; } }
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--card);
+  z-index: 1;
+}
+.modal-head h2 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.2px;
+}
+.close-btn {
+  width: 28px; height: 28px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.close-btn:hover { border-color: var(--border2); }
+.close-btn svg { width: 12px; height: 12px; stroke: var(--text2); stroke-width: 2.4; fill: none; stroke-linecap: round; }
+
+.modal-body { padding: 8px 24px 28px; }
+
+.step {
+  display: flex;
+  gap: 14px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--border);
+}
+.step:last-of-type { border-bottom: none; }
+
+.step-n {
+  width: 24px; height: 24px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--text);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--card);
+  margin-top: 1px;
 }
 
-.search{
-    width:100%;
-    margin-top:24px;
-    padding:14px 16px;
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:12px;
-    color:var(--text);
-    font-size:15px;
+.step-body { flex: 1; }
+.step-title { font-size: 13.5px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.step-desc { font-size: 13px; font-weight: 300; color: var(--text2); line-height: 1.65; }
+.step-desc code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 1px 6px;
+  color: var(--teal);
 }
 
-.search:focus{
-    outline:none;
-    border-color:var(--accent);
+.modal-note {
+  margin-top: 18px;
+  padding: 13px 16px;
+  background: var(--teal-bg);
+  border: 1px solid var(--teal-border);
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 300;
+  color: var(--teal);
+  line-height: 1.6;
 }
+.modal-note strong { font-weight: 600; }
 
-.results{
-    margin-top:20px;
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:16px;
-    padding:8px;
-    max-height:500px;
-    overflow:auto;
+@media(max-width:500px) {
+  .stats { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .topbar { flex-wrap: nowrap; }
 }
-
-.user{
-    padding:14px 16px;
-    border-bottom:1px solid var(--border);
-    font-size:15px;
+@media(max-width:360px) {
+  .stat .num { font-size: 22px; }
+  .hero-title { font-size: 26px; }
 }
-
-.user:last-child{
-    border-bottom:none;
-}
-
-.copy-btn{
-    width:100%;
-    margin-top:20px;
-}
-
-@media(max-width:800px){
-
-    .uploads{
-        grid-template-columns:1fr;
-    }
-
-    .stats{
-        grid-template-columns:1fr 1fr;
-    }
-
-}
-
-@media(max-width:500px){
-
-    .stats{
-        grid-template-columns:1fr;
-    }
-
-}
-
 </style>
 </head>
 <body>
 
-<div class="container">
+<!-- Hidden file input — lives outside the upload zone to avoid double-trigger -->
+<input type="file" id="zipFile" accept=".zip" onchange="handleFile(this)" style="display:none">
 
-<div class="card">
+<div class="page">
 
-<h1>Instagram Follow Checker</h1>
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <span class="brand-name">Follower Checker</span>
+    </div>
+    <button class="how-btn" onclick="openGuide()">
+      <div class="how-btn-dot"></div>
+      How to use
+      <svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+    </button>
+  </div>
 
-<div class="subtitle">
-Find who follows you back, who doesn't, and your mutuals.
+  <!-- Guide modal -->
+  <div class="overlay" id="overlay" onclick="overlayClick(event)">
+    <div class="modal" id="modal">
+      <div class="drag-handle"></div>
+      <div class="modal-head">
+        <h2>How to export your Instagram data</h2>
+        <div class="close-btn" onclick="closeGuide()">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div class="step-body">
+            <div class="step-title">Go to your profile</div>
+            <div class="step-desc">Open the Instagram app and tap your <strong>profile picture</strong> in the bottom-right corner.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div class="step-body">
+            <div class="step-title">Open the menu</div>
+            <div class="step-desc">Tap the <code>☰</code> three-line icon in the top-right, then tap <code>Settings and privacy</code>.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <div class="step-body">
+            <div class="step-title">Go to Accounts Center</div>
+            <div class="step-desc">Tap <code>Accounts Center</code>, then tap <code>Your information and permissions</code>.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">4</div>
+          <div class="step-body">
+            <div class="step-title">Start the export</div>
+            <div class="step-desc">Tap <code>Export your information</code>, then <code>Create export</code>. Select the Instagram account to export.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">5</div>
+          <div class="step-body">
+            <div class="step-title">Set destination &amp; email</div>
+            <div class="step-desc">Choose <code>Export to device</code>. Under <code>Notify</code>, select the email where Instagram should send the download link.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">6</div>
+          <div class="step-body">
+            <div class="step-title">Select Followers &amp; Following only</div>
+            <div class="step-desc">Under <code>Customize information</code>, open the <code>Connections</code> tab and check only <code>Followers and following</code>.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">7</div>
+          <div class="step-body">
+            <div class="step-title">Set date range &amp; format</div>
+            <div class="step-desc">Set <code>Date range</code> to <code>All time</code> for the whole data. Set <code>Format</code> to <code>JSON</code>. Tap <code>Start export</code>.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">8</div>
+          <div class="step-body">
+            <div class="step-title">Confirm with your password</div>
+            <div class="step-desc">Enter your Instagram password when prompted to authorize the export. The file will be emailed to you shortly.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">9</div>
+          <div class="step-body">
+            <div class="step-title">Download the ZIP</div>
+            <div class="step-desc">Open the email from Instagram, tap the download link, and save the <code>.zip</code> file to your device.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">10</div>
+          <div class="step-body">
+            <div class="step-title">Upload here &amp; analyze</div>
+            <div class="step-desc">Come back to this page, tap the upload area, select your <code>.zip</code> file, then tap <code>Analyze account</code>.</div>
+          </div>
+        </div>
+        <div class="modal-note">
+          <strong>Privacy:</strong> Everything runs entirely in your browser. Your data is never uploaded to any server.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero card -->
+  <div class="hero">
+    <div class="hero-title">Find out who <span>doesn't</span><br>follow you back</div>
+    <div class="hero-sub">Upload your Instagram data export to see the full picture instantly.</div>
+
+    <div class="upload-zone" id="uploadZone" onclick="triggerFileInput()">
+      <div class="upload-ic">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </div>
+      <h3>Upload Instagram ZIP</h3>
+      <small>Tap to select your downloaded data file</small>
+      <div id="fileBadge" class="file-badge">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span id="fileNameText">file.zip</span>
+      </div>
+    </div>
+
+    <button class="analyze-btn" onclick="analyze()">Analyze account</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat s-followers">
+      <div class="num" id="followersCount">—</div>
+      <div class="slbl">Followers</div>
+    </div>
+    <div class="stat s-following">
+      <div class="num" id="followingCount">—</div>
+      <div class="slbl">Following</div>
+    </div>
+    <div class="stat s-notback">
+      <div class="num" id="notBackCount">—</div>
+      <div class="slbl">Not back</div>
+    </div>
+    <div class="stat s-fans">
+      <div class="num" id="fansCount">—</div>
+      <div class="slbl">Fans</div>
+    </div>
+  </div>
+
+  <!-- Results card -->
+  <div class="results-card">
+    <div class="tabs">
+      <button id="btn1" onclick="showTab('notback')">Not following back</button>
+      <button id="btn2" onclick="showTab('fans')">Fans</button>
+      <button id="btn3" onclick="showTab('mutual')">Mutual</button>
+    </div>
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search" id="search" placeholder="Search username…" oninput="render()">
+    </div>
+    <div class="results" id="results">
+      <div class="empty">Upload a ZIP file and tap Analyze</div>
+    </div>
+    <button class="copy-btn" onclick="copyResults()">Copy current list</button>
+  </div>
+
 </div>
-
-<div class="uploads">
-
-<div class="upload-box">
-
-<div class="upload-icon">📂</div>
-
-<h3>Followers Files</h3>
-
-<input
-type="file"
-id="followers"
-multiple
-accept=".json">
-
-<small>
-Select all followers files
-(followers_1.json, followers_2.json, etc.)
-</small>
-
-</div>
-
-<div class="upload-box">
-
-<div class="upload-icon">👥</div>
-
-<h3>Following File</h3>
-
-<input
-type="file"
-id="following"
-accept=".json">
-
-<small>
-Select your following.json file
-</small>
-
-</div>
-
-</div>
-
-<div class="action-area">
-
-<button onclick="analyze()">
-Analyze Account
-</button>
-
-</div>
-
-<div class="stats">
-
-<div class="stat">
-<div class="number" id="followersCount">0</div>
-<div class="label">Followers</div>
-</div>
-
-<div class="stat">
-<div class="number" id="followingCount">0</div>
-<div class="label">Following</div>
-</div>
-
-<div class="stat">
-<div class="number" id="notBackCount">0</div>
-<div class="label">Not Following Back</div>
-</div>
-
-<div class="stat">
-<div class="number" id="fansCount">0</div>
-<div class="label">Fans</div>
-</div>
-
-</div>
-
-<div class="tabs">
-
-<button
-id="btn1"
-onclick="showTab('notback')">
-Not Following Back
-</button>
-
-<button
-id="btn2"
-onclick="showTab('fans')">
-Fans
-</button>
-
-<button
-id="btn3"
-onclick="showTab('mutual')">
-Mutual
-</button>
-
-</div>
-
-<input
-class="search"
-id="search"
-placeholder="Search username..."
-oninput="render()">
-
-<div
-class="results"
-id="results">
-</div>
-
-<button
-class="copy-btn"
-onclick="copyResults()">
-Copy Current List
-</button>
-</div> <!-- closes .card -->
-</div> <!-- closes .container -->
 
 <script>
+function openGuide() {
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeGuide() {
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function overlayClick(e) {
+  if (e.target === document.getElementById('overlay')) closeGuide();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGuide(); });
 
-let currentTab="notback";
-
-let notBack=[];
-let fans=[];
-let mutual=[];
-
-function showTab(tab){
-
-    currentTab=tab;
-
-    document
-    .querySelectorAll(".tabs button")
-    .forEach(b=>b.classList.remove("active"));
-
-    if(tab==="notback")
-        btn1.classList.add("active");
-
-    if(tab==="fans")
-        btn2.classList.add("active");
-
-    if(tab==="mutual")
-        btn3.classList.add("active");
-
-    render();
+// Fix: trigger file input programmatically — avoids the double-click bug
+// caused by the old approach of overlaying the input on top of the zone
+function triggerFileInput() {
+  document.getElementById('zipFile').click();
 }
 
-async function readJSON(file){
-    return JSON.parse(await file.text());
+let currentTab = "notback";
+let notBack = [], fans = [], mutual = [];
+
+function handleFile(input) {
+  const f = input.files[0];
+  if (!f) return;
+  document.getElementById('fileNameText').textContent = f.name;
+  document.getElementById('fileBadge').classList.add('show');
+  document.getElementById('uploadZone').classList.add('has-file');
 }
 
-async function analyze(){
+function showTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
+  if (tab === "notback") btn1.classList.add("active");
+  if (tab === "fans") btn2.classList.add("active");
+  if (tab === "mutual") btn3.classList.add("active");
+  render();
+}
 
-    try{
-
-        const followerFiles =
-            [...document
-            .getElementById("followers")
-            .files];
-
-        const followingFile =
-            document
-            .getElementById("following")
-            .files[0];
-
-        if(
-            followerFiles.length===0 ||
-            !followingFile
-        ){
-            alert("Select files first.");
-            return;
-        }
-
-        const followersSet =
-            new Set();
-
-        for(const file of followerFiles){
-
-            const data =
-                await readJSON(file);
-
-            data.forEach(item=>{
-
-                const user =
-                    item
-                    ?.string_list_data
-                    ?.[0]
-                    ?.value;
-
-                if(user)
-                    followersSet.add(
-                        user.toLowerCase()
-                    );
-
-            });
-
-        }
-
-        const followingData =
-            await readJSON(
-                followingFile
-            );
-
-        const followingSet =
-            new Set();
-
-        (
-            followingData
-            .relationships_following || []
-        )
-        .forEach(item=>{
-
-            if(item.title){
-
-                followingSet.add(
-                    item.title.toLowerCase()
-                );
-
-            }
-
-        });
-
-        notBack =
-            [...followingSet]
-            .filter(
-                x=>!followersSet.has(x)
-            )
-            .sort();
-
-        fans =
-            [...followersSet]
-            .filter(
-                x=>!followingSet.has(x)
-            )
-            .sort();
-
-        mutual =
-            [...followersSet]
-            .filter(
-                x=>followingSet.has(x)
-            )
-            .sort();
-
-        followersCount.textContent =
-            followersSet.size;
-
-        followingCount.textContent =
-            followingSet.size;
-
-        notBackCount.textContent =
-            notBack.length;
-
-        fansCount.textContent =
-            fans.length;
-
-        showTab("notback");
-
+async function analyze() {
+  const zipFile = document.getElementById("zipFile").files[0];
+  if (!zipFile) { alert("Please upload an Instagram ZIP file."); return; }
+  const btn = document.querySelector('.analyze-btn');
+  btn.textContent = 'Analyzing…';
+  btn.style.opacity = '0.55';
+  try {
+    const zip = await JSZip.loadAsync(zipFile);
+    let followersSet = new Set(), followingSet = new Set();
+    for (const filename of Object.keys(zip.files)) {
+      const file = zip.files[filename];
+      if (file.dir) continue;
+      let text; try { text = await file.async("string"); } catch { continue; }
+      let data; try { data = JSON.parse(text); } catch { continue; }
+      if (filename.includes("followers") && Array.isArray(data)) {
+        data.forEach(item => { const u = item?.string_list_data?.[0]?.value; if (u) followersSet.add(u.toLowerCase()); });
+      }
+      if (filename.includes("following")) {
+        const list = data.relationships_following || [];
+        list.forEach(item => { const u = item?.string_list_data?.[0]?.value || item?.title; if (u) followingSet.add(u.toLowerCase()); });
+      }
     }
-    catch(err){
-
-        console.error(err);
-
-        alert(
-            "Error reading files.\n\n" +
-            err.message
-        );
-    }
-
+    notBack = [...followingSet].filter(x => !followersSet.has(x)).sort();
+    fans = [...followersSet].filter(x => !followingSet.has(x)).sort();
+    mutual = [...followersSet].filter(x => followingSet.has(x)).sort();
+    animCount('followersCount', followersSet.size);
+    animCount('followingCount', followingSet.size);
+    animCount('notBackCount', notBack.length);
+    animCount('fansCount', fans.length);
+    showTab("notback");
+  } catch(err) { alert("Error reading ZIP:\n\n" + err.message); }
+  btn.textContent = 'Analyze account';
+  btn.style.opacity = '1';
 }
 
-function render(){
-
-    let list=[];
-
-    if(currentTab==="notback")
-        list=notBack;
-
-    if(currentTab==="fans")
-        list=fans;
-
-    if(currentTab==="mutual")
-        list=mutual;
-
-    const q =
-        search.value
-        .toLowerCase();
-
-    const filtered =
-        list.filter(
-            x=>x.includes(q)
-        );
-
-    results.innerHTML =
-        filtered.map(
-            user =>
-            `<div class="user">${user}</div>`
-        )
-        .join("");
-
+function animCount(id, target) {
+  const el = document.getElementById(id);
+  const dur = 650, t0 = performance.now();
+  function step(now) {
+    const p = Math.min((now - t0) / dur, 1);
+    const e = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(e * target);
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
 }
 
-function copyResults(){
-
-    let list=[];
-
-    if(currentTab==="notback")
-        list=notBack;
-
-    if(currentTab==="fans")
-        list=fans;
-
-    if(currentTab==="mutual")
-        list=mutual;
-
-    navigator.clipboard.writeText(
-        list.join("\n")
-    );
-
-    alert("Copied!");
+function render() {
+  const list = currentTab === "notback" ? notBack : currentTab === "fans" ? fans : mutual;
+  const q = search.value.toLowerCase();
+  const filtered = list.filter(x => x.includes(q));
+  if (filtered.length === 0) {
+    results.innerHTML = `<div class="empty">${list.length === 0 ? 'No data yet - run an analysis first' : 'No users match your search'}</div>`;
+    return;
+  }
+  results.innerHTML = filtered.map((u, i) =>
+    `<div class="user-row"><div class="avatar">${u[0]}</div><span class="uname">${u}</span><span class="u-idx">${i + 1}</span></div>`
+  ).join('');
 }
 
+function copyResults() {
+  const list = currentTab === "notback" ? notBack : currentTab === "fans" ? fans : mutual;
+  if (!list.length) { alert("Nothing to copy yet."); return; }
+  navigator.clipboard.writeText(list.join("\n"));
+  const btn = document.querySelector('.copy-btn');
+  btn.textContent = 'Copied';
+  setTimeout(() => btn.textContent = 'Copy current list', 2000);
+}
+
+showTab("notback");
 </script>
-
 </body>
 </html>

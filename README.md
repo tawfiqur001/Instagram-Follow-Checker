@@ -89,24 +89,4 @@ This tool is entirely client-side. Your Instagram data is:
 
 ---
 
-## Running Locally
 
-No build step needed. Just open the file:
-
-```bash
-# Clone or download the repo, then simply open the file
-open instagram-follow-checker.html
-```
-
-Or serve it locally if your browser blocks local file access:
-
-```bash
-npx serve .
-# then open http://localhost:3000
-```
-
----
-
-## License
-
-MIT — free to use, modify, and distribute.
